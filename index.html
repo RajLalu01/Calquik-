@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>भारतीय कैलकुलेटर</title>
+    <title>INDIAN CALCULATOR</title>
     <style>
         * {
             box-sizing: border-box;
@@ -67,6 +67,11 @@
             color: white;
         }
 
+        .delete {
+            background-color: #ff4444;
+            color: white;
+        }
+
         .equals {
             background-color: #138808;
             color: white;
@@ -102,7 +107,7 @@
         <div class="display" id="display">₹0</div>
         <div class="buttons">
             <button class="operator" onclick="clearDisplay()">C</button>
-            <button class="operator" onclick="appendToDisplay('()')">()</button>
+            <button class="delete" onclick="deleteLastChar()">⌫</button>
             <button class="operator" onclick="appendToDisplay('%')">%</button>
             <button class="operator" onclick="appendToDisplay('/')">/</button>
             
@@ -164,6 +169,20 @@
             document.getElementById('display').textContent = currentCurrency + '0';
         }
 
+        function deleteLastChar() {
+            const display = document.getElementById('display');
+            let currentValue = display.textContent.replace(currentCurrency, '');
+            
+            if(currentValue.length > 0) {
+                currentValue = currentValue.slice(0, -1);
+                display.textContent = currentCurrency + (currentValue || '0');
+            }
+            
+            if(currentValue === '') {
+                display.textContent = currentCurrency + '0';
+            }
+        }
+
         function calculate() {
             try {
                 const display = document.getElementById('display');
@@ -186,4 +205,4 @@
         document.getElementById('currencySelector').addEventListener('change', updateCurrency);
     </script>
 </body>
-  </html>
+</html>

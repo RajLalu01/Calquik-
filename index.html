@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>भारतीय कैलकुलेटर</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(45deg, #138808, #ffffff, #FF9933);
+        }
+
+        .calculator {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            padding: 20px;
+            width: 320px;
+        }
+
+        .display {
+            background-color: #138808;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: right;
+            font-size: 24px;
+            height: 80px;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .number {
+            background-color: #e0e0e0;
+            color: #000;
+        }
+
+        .operator {
+            background-color: #FF9933;
+            color: white;
+        }
+
+        .equals {
+            background-color: #138808;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .currency-selector {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        select {
+            padding: 5px;
+            border-radius: 5px;
+            border: 2px solid #138808;
+            background-color: white;
+            color: #138808;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="currency-selector">
+            <select id="currencySelector">
+                <option value="₹">भारत (₹)</option>
+                <option value="$">USA ($)</option>
+                <option value="€">यूरोप (€)</option>
+                <option value="£">यूके (£)</option>
+                <option value="¥">जापान (¥)</option>
+            </select>
+        </div>
+        <div class="display" id="display">₹0</div>
+        <div class="buttons">
+            <button class="operator" onclick="clearDisplay()">C</button>
+            <button class="operator" onclick="appendToDisplay('()')">()</button>
+            <button class="operator" onclick="appendToDisplay('%')">%</button>
+            <button class="operator" onclick="appendToDisplay('/')">/</button>
+            
+            <button class="number" onclick="appendToDisplay('7')">7</button>
+            <button class="number" onclick="appendToDisplay('8')">8</button>
+            <button class="number" onclick="appendToDisplay('9')">9</button>
+            <button class="operator" onclick="appendToDisplay('*')">×</button>
+            
+            <button class="number" onclick="appendToDisplay('4')">4</button>
+            <button class="number" onclick="appendToDisplay('5')">5</button>
+            <button class="number" onclick="appendToDisplay('6')">6</button>
+            <button class="operator" onclick="appendToDisplay('-')">-</button>
+            
+            <button class="number" onclick="appendToDisplay('1')">1</button>
+            <button class="number" onclick="appendToDisplay('2')">2</button>
+            <button class="number" onclick="appendToDisplay('3')">3</button>
+            <button class="operator" onclick="appendToDisplay('+')">+</button>
+            
+            <button class="number" onclick="appendToDisplay('0')">0</button>
+            <button class="number" onclick="appendToDisplay('.')">.</button>
+            <button class="equals" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let currentCurrency = '₹';
+        
+        function updateCurrency() {
+            const selector = document.getElementById('currencySelector');
+            currentCurrency = selector.value;
+            document.getElementById('display').textContent = currentCurrency + '0';
+        }
+
+        function appendToDisplay(value) {
+            const display = document.getElementById('display');
+            if (display.textContent === currentCurrency + '0') {
+                display.textContent = currentCurrency;
+            }
+            
+            // Handle special cases for parentheses
+            if (value === '()') {
+                const current = display.textContent.replace(currentCurrency, '');
+                const openParens = (current.match(/\(/g) || []).length;
+                const closeParens = (current.match(/\)/g) || []).length;
+                
+                if (openParens === closeParens || 
+                    current.slice(-1) === '(' || 
+                    isNaN(current.slice(-1))) {
+                    value = '(';
+                } else {
+                    value = ')';
+                }
+            }
+            
+            display.textContent += value;
+        }
+
+        function clearDisplay() {
+            document.getElementById('display').textContent = currentCurrency + '0';
+        }
+
+        function calculate() {
+            try {
+                const display = document.getElementById('display');
+                let expression = display.textContent.replace(currentCurrency, '');
+                
+                // Handle percentage calculations
+                expression = expression.replace(/%/g, '/100');
+                
+                // Evaluate expression safely
+                const result = eval(expression);
+                
+                display.textContent = currentCurrency + result.toString().slice(0, 10);
+            } catch (error) {
+                display.textContent = currentCurrency + 'Error';
+                setTimeout(clearDisplay, 1000);
+            }
+        }
+
+        // Initialize currency selector
+        document.getElementById('currencySelector').addEventListener('change', updateCurrency);
+    </script>
+</body>
+  </html>
